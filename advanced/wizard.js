@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-// FIXME: TelegramError: 403: Forbidden: bot was blocked by the user
 const { Composer, Markup, Scenes, session, Telegraf } = require('telegraf')
 const RedisSession = require('telegraf-session-redis')
 const env = require("../.env")
@@ -58,11 +57,15 @@ const superWizard = new Scenes.WizardScene(
 )
 
 const bot = new Telegraf(env.token)
+
+bot.catch(() => console.log("Bot error"))
+
 const stage = new Scenes.Stage([superWizard], {	default: 'super_wiz',})
 
 // TODO: implement redis session or similar to avoid this deprecated method.
 bot.use(session())
 bot.use(stage.middleware())
-bot.launch().then(() => {
-    console.log(`Bot running . . .`)
-})
+bot.launch().then(() => console.log(`Bot running . . .`))
+
+process.once('SIGINT', () => bot.stop('SIGINT'))
+process.once('SIGTERM', () => bot.stop('SIGTERM'))
