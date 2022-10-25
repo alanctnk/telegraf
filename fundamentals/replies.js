@@ -15,7 +15,7 @@ bot.start(async ctx => {
         +"[Google](https://www.google.com)"
     )
 
-    await ctx.replyWithPhoto({source: `${__dirname}/asstes/braz.png`})
+    await ctx.replyWithPhoto({source: `${__dirname}/assets/braz.png`})
     await ctx.replyWithPhoto("https://cdn.imgbin.com/14/16/23/imgbin-sports-association-boxing-computer-icons-brazilian-jiu-jitsu-boxing-5KMQfAir5MvSSEtaWmja2Ueux.jpg", {
         caption: "Bom treino!"
     })
