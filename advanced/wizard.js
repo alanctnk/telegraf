@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-const { Composer, Markup, Scenes, session, Telegraf } = require('telegraf');
+const { Composer, Markup, Scenes, Telegraf } = require('telegraf');
+const { enter } = Scenes.Stage;
 // const RedisSession = require('telegraf-session-redis');
-const LocalSession = require('telegraf-session-local');
+// const LocalSession = require('telegraf-session-local');
+const RedisSession = require('telegraf-session-redis');
 const env = require('../.env');
 
-const local_session = new LocalSession({
+const session = new RedisSession({
 	store: {
 		host: '127.0.0.1',
 		port: 6379,
@@ -54,20 +56,26 @@ const superWizard = new Scenes.WizardScene(
 	},
 	async (ctx) => {
 		await ctx.reply('Done');
+		// OR IMPORT leave from Stage and do `leave()(ctx)`
 		return await ctx.scene.leave();
 	},
 );
+superWizard.leave((ctx) => ctx.reply('Leaving . . . '));
 
-const bot = new Telegraf(env.labTK);
-
+const bot = new Telegraf(env.uToken);
+bot.use(session);
 bot.catch((e) => console.log('Bot error\n' + `${e}`));
 
-const stage = new Scenes.Stage([superWizard], { default: 'super_wiz' });
+const stage = new Scenes.Stage([superWizard]);
 
-// TODO: implement redis session or similar to avoid this deprecated method.
-bot.use(local_session.middleware());
-// bot.use(session());
+// bot.use(local_session.middleware());
 bot.use(stage.middleware());
+
+bot.start((ctx) => {
+	ctx.reply('Hello press /test');
+});
+bot.command('test', enter('super_wiz'));
+
 bot.launch().then(() => console.log(`Bot running . . .`));
 
 process.once('SIGINT', () => bot.stop('SIGINT'));

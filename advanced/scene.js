@@ -14,10 +14,10 @@ const session = new RedisSession({
 });
 bot.use(session);
 
-bot.start((ctx) => {
+bot.start(async (ctx) => {
 	const name = ctx.update.message.from.first_name;
-	ctx.reply(`Seja bem vindo, ${name}!`);
-	ctx.reply('Entre com /echo ou /soma para iniciar . . .');
+	await ctx.reply(`Seja bem vindo, ${name}!`);
+	await ctx.reply('Entre com /echo ou /soma para iniciar . . .');
 	ctx.session.sum = 0;
 });
 
